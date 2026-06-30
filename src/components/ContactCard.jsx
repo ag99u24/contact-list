@@ -1,10 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useStore } from "../store.js";
 
-const ContactCard = ({ contact }) => {
-  const { deleteContact } = useStore();
-
+const ContactCard = ({ contact, deleteContact }) => {
   return (
     <div className="card mb-3">
       <div className="row g-0 align-items-center">

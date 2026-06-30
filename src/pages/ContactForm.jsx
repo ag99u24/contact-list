@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useStore } from "../store.js";
+import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 
 const ContactForm = () => {
   const { contacts, addContact, updateContact } = useStore();
