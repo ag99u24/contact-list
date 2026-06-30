@@ -2,8 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 
+const API = "https://playground.4geeks.com/contact/agendas";
+const AGENDA = "agenda_alex_contacts";
+
 const ContactForm = () => {
-  const { contacts, addContact, updateContact } = useStore();
+  const { store } = useGlobalReducer();
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -16,10 +19,18 @@ const ContactForm = () => {
 
   useEffect(() => {
     if (id) {
-      const foundContact = contacts.find(item => item.id === Number(id));
-      if (foundContact) setContact(foundContact);
+      const foundContact = store.contacts.find(item => item.id === Number(id));
+
+      if (foundContact) {
+        setContact({
+          name: foundContact.name,
+          email: foundContact.email,
+          phone: foundContact.phone,
+          address: foundContact.address
+        });
+      }
     }
-  }, [id, contacts]);
+  }, [id, store.contacts]);
 
   const handleChange = event => {
     setContact({
@@ -28,11 +39,26 @@ const ContactForm = () => {
     });
   };
 
-  const handleSubmit = event => {
+  const handleSubmit = async event => {
     event.preventDefault();
 
-    if (id) updateContact(id, contact);
-    else addContact(contact);
+    if (id) {
+      await fetch(`${API}/${AGENDA}/contacts/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(contact)
+      });
+    } else {
+      await fetch(`${API}/${AGENDA}/contacts`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(contact)
+      });
+    }
 
     navigate("/");
   };
@@ -44,16 +70,16 @@ const ContactForm = () => {
       </h1>
 
       <form onSubmit={handleSubmit}>
-        <label>Full Name</label>
+        <label className="form-label">Full Name</label>
         <input className="form-control mb-3" name="name" value={contact.name} onChange={handleChange} />
 
-        <label>Email</label>
+        <label className="form-label">Email</label>
         <input className="form-control mb-3" name="email" value={contact.email} onChange={handleChange} />
 
-        <label>Phone</label>
+        <label className="form-label">Phone</label>
         <input className="form-control mb-3" name="phone" value={contact.phone} onChange={handleChange} />
 
-        <label>Address</label>
+        <label className="form-label">Address</label>
         <input className="form-control mb-3" name="address" value={contact.address} onChange={handleChange} />
 
         <button className="btn btn-primary w-100">Save</button>
@@ -67,15 +93,6 @@ const ContactForm = () => {
 };
 
 export default ContactForm;
-
-
-
-
-
-
-
-
-
 
 
 
